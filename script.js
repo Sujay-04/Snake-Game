@@ -139,3 +139,31 @@ addEventListener('keydown',(event)=>{
   }
   
 })
+
+
+
+// --- MOBILE CONTROLS LOGIC ---
+
+// Select the buttons
+const upBtn = document.getElementById("up-btn");
+const downBtn = document.getElementById("down-btn");
+const leftBtn = document.getElementById("left-btn");
+const rightBtn = document.getElementById("right-btn");
+
+// Add Click Listeners (Using 'touchstart' is faster on mobile than 'click')
+
+upBtn.addEventListener("click", () => {
+    if(direction !== "down") direction = "up";
+});
+
+downBtn.addEventListener("click", () => {
+    if(direction !== "up") direction = "down";
+});
+
+leftBtn.addEventListener("click", () => {
+    if(direction !== "right") direction = "left";
+});
+
+rightBtn.addEventListener("click", () => {
+    if(direction !== "left") direction = "right";
+});
