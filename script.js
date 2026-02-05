@@ -7,6 +7,16 @@ const RestartBtn = document.querySelector('.btn-restart');
 const gameOver =document.querySelector('.game-over');
 const startgame =document.querySelector('.start-game')
 
+const scoreElem = document.querySelector('#score');
+const highScoreElem = document.querySelector('#high-score');
+const timeElem = document.querySelector('#time');
+
+let score=0;
+let highscore=localStorage.getItem("highscore")||0;
+let time =`00-00`;
+let timeIntervalId=null;
+
+highScoreElem.innerText = highscore;
 
 let cols = Math.floor(board.clientWidth/blockWidth);
 let rows = Math.floor(board.clientHeight/blockHeight);
@@ -65,6 +75,7 @@ function render(){
     head={x:snake[0].x-1,y:snake[0].y}
     
   }
+  //Head collision Logic
   if(head.x<0 || head.y<0 ||head.x>=rows||head.y>=cols){
     
     clearInterval(IntervalId);
@@ -74,11 +85,19 @@ function render(){
     return;
 
   }
+  //Food Consume logic
   if(head.x==food.x && head.y==food.y){
     blocks[`${food.x}-${food.y}`].classList.remove("food");
     food = {x:Math.floor(Math.random()*rows),y:Math.floor(Math.random()*cols)}
     blocks[`${food.x}-${food.y}`].classList.add("food");
     snake.unshift(head);
+    score+=10;
+    scoreElem.innerText=score;
+    if(score>highscore){
+      highscore =score;
+      localStorage.setItem("highscore",highscore.toString())
+      highScoreElem.innerText = highscore;
+    }
   }
   
   snake.forEach((seagment)=>{
@@ -95,33 +114,43 @@ StartBtn.addEventListener('click',()=>{
   IntervalId= setInterval(() => {
   render()
 }, 100);
+timeIntervalId=setInterval(() => {
+  let[min,sec]=time.split("-").map(Number);
+  if(sec==59){
+    min+=1;
+    sec=0;
+  }
+  else{
+    sec+=1;
+  }
+  time=`${min}-${sec}`;
+  timeElem.innerText=time;
+},1000);
+
 })
 RestartBtn.addEventListener('click',Restartgame)
 function Restartgame(){
   modal.style.display='none';
-   blocks[`${food.x}-${food.y}`].classList.remove("food");
+  blocks[`${food.x}-${food.y}`].classList.remove("food");
   snake.forEach((seagment)=>{
-    
-    
     blocks[`${seagment.x}-${seagment.y}`].classList.remove('fill');
   })
-  
-    snake=[];
+  snake=[];
 
   for (let i = 0; i < snakeLength; i++) {
     snake.push({
         x: startX,
         y: startY + i
     });
-}
-  
+  }
+  score=0;
+  time=`00-00`;
+  scoreElem.innerText=score;
+  timeElem.innerText=time;
   food = {x:Math.floor(Math.random()*rows),y:Math.floor(Math.random()*cols)};
   IntervalId= setInterval(() => {
   render()
 }, 100);
-  
-  
-
 }
 
 addEventListener('keydown',(event)=>{
@@ -140,30 +169,3 @@ addEventListener('keydown',(event)=>{
   
 })
 
-
-
-// --- MOBILE CONTROLS LOGIC ---
-
-// Select the buttons
-const upBtn = document.getElementById("up-btn");
-const downBtn = document.getElementById("down-btn");
-const leftBtn = document.getElementById("left-btn");
-const rightBtn = document.getElementById("right-btn");
-
-// Add Click Listeners (Using 'touchstart' is faster on mobile than 'click')
-
-upBtn.addEventListener("click", () => {
-    if(direction !== "down") direction = "up";
-});
-
-downBtn.addEventListener("click", () => {
-    if(direction !== "up") direction = "down";
-});
-
-leftBtn.addEventListener("click", () => {
-    if(direction !== "right") direction = "left";
-});
-
-rightBtn.addEventListener("click", () => {
-    if(direction !== "left") direction = "right";
-});
